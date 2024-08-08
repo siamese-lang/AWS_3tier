@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.amazoonS3.mini.mapper.BoardMapper">
+
+    <select id="getAll" resultType="Board">
+        SELECT * FROM board
+    </select>
+
+    <insert id="insertBoard" useGeneratedKeys="true" keyProperty="bIdx">
+        INSERT INTO board (row_span, column_span, title, content)
+        VALUES (#{rowSpan}, #{columnSpan}, #{title}, #{content})
+    </insert>
+
+    <update id="updateBoard">
+        UPDATE board
+        SET row_span = #{rowSpan},
+            column_span = #{columnSpan},
+            title = #{title},
+            content = #{content}
+        WHERE b_idx = #{bIdx}
+    </update>
+
+    <select id="getBoardById" resultType="Board">
+        SELECT * FROM board WHERE b_idx = #{bIdx}
+    </select>
+
+    <delete id="deleteBoard">
+        DELETE FROM board WHERE b_idx=#{bIdx}
+    </delete>
+
+</mapper>

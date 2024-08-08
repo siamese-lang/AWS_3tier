@@ -1,34 +1,36 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: was-svc
+  name: db-svc
 spec:
   selector:
-    app: was
-  ports: 
-  - port: 8080
-    targetPort: 8080
+    app: mydb
+  ports:
+  - port: 3306
+    targetPort: 3306
+  clusterIP: None
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: was
+  name: mydb
 spec:
-  replicas: 3
   selector:
     matchLabels:
-      app: was
+      app: mydb
+  serviceName: db-svc
+  replicas: 1
   template:
     metadata:
       labels:
-        app: was
+        app: mydb
     spec:
       containers:
-      - name: was
-        image: sojh5741aws/mini:backend-v1
+      - name: mydb
+        image: mariadb:latest
         ports:
-        - containerPort: 8080
-        imagePullPolicy: Always
+        - containerPort: 3306
+          name: tcp
         env:
 # MARIADB_HOST
         - name: MARIADB_HOST
@@ -42,6 +44,12 @@ spec:
             configMapKeyRef:
               name: app-config
               key: MARIADB_PORT
+# MARIADB_ROOT_PASSWORD
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MARIADB_ROOT_PASSWORD
 # MARIADB_DATABASE
         - name: MARIADB_DATABASE
           valueFrom:
@@ -60,9 +68,3 @@ spec:
             secretKeyRef:
               name: mysql-secret
               key: MARIADB_PASSWORD
-# FRONTEND_URL
-        - name: FRONTEND_URL
-          valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: FRONTEND_URL

@@ -3,4 +3,31 @@ kind: ConfigMap
 metadata:
   name: app-config
 data:
-  FRONTEND_URL: "http://localhost:3000"
+  MARIADB_HOST: "db-svc"
+  MARIADB_PORT: "3306"
+  FRONTEND_URL: "http://web-svc"
+  REACT_APP_API_BASE_URL: "http://was-svc:8080"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-init-sql
+data:
+  init.sql: |
+    CREATE TABLE user (
+      id INT(11) AUTO_INCREMENT PRIMARY KEY,
+      username VARCHAR(50) NOT NULL UNIQUE,
+      email VARCHAR(100) NOT NULL UNIQUE,
+      password VARCHAR(255) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE `board` (
+      `b_idx` int(11) NOT NULL AUTO_INCREMENT,
+      `row_span` int(11) DEFAULT NULL,
+      `column_span` int(11) DEFAULT NULL,
+      `title` varchar(300) DEFAULT NULL,
+      `content` text DEFAULT NULL,
+      PRIMARY KEY (`b_idx`)
+    );

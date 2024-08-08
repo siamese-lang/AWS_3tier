@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Form, FormField, Input } from '@cloudscape-design/components';
 
 function UpdateItemForm({ initialData, onSubmit, onCancel }) {
-  const [title, setTitle] = useState(initialData?.title || '');
-  const [content, setContent] = useState(initialData?.content || '');
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title || '');
+      setContent(initialData.content || '');
+    }
+  }, [initialData]);
 
   const handleSubmit = (event) => {
     event.preventDefault();

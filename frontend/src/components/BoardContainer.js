@@ -31,7 +31,7 @@ function BoardContainer() {
   const handleCreate = useCallback(async (newItem) => {
     try {
       const response = await createBoardItem(newItem);
-      const createdItem = response; // Adjust based on actual API response
+      const createdItem = { ...newItem, ...response }; // Adjust based on actual API response
       setItems(prevItems => [...prevItems, createdItem]);
       setIsFormVisible(false);
     } catch (error) {
@@ -45,11 +45,10 @@ function BoardContainer() {
         console.error('Item ID (bidx) is missing.');
         return;
       }
-  
+
       const response = await updateBoardItem(item);
-      // Adjust based on actual API response
-      const updatedItem = response.data; // Use response directly if it contains the updated item
-  
+      const updatedItem = response.data.data; // Assume response contains the updated item
+
       setItems(prevItems =>
         prevItems.map(i => i.bidx === item.bidx ? updatedItem : i)
       );
@@ -60,7 +59,6 @@ function BoardContainer() {
       console.error('Error updating item:', error);
     }
   }, []);
-  
 
   const handleDelete = useCallback(async (bidx) => {
     try {
@@ -76,16 +74,15 @@ function BoardContainer() {
   const handleItemsChange = (event) => {
     const updatedItems = event.detail.items;
     setItems(updatedItems);
-  
+
     updatedItems.forEach(item => {
       if (!item.bidx) {
-        handleCreate(item);
+        handleCreate({ ...item, rowSpan: 1, columnSpan: 2 });
       } else {
         handleUpdate(item);
       }
     });
   };
-  
 
   const i18nStrings = {
     liveAnnouncementDndStarted: operationType =>

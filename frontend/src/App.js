@@ -1,5 +1,7 @@
 import React from 'react';
 import AppLayoutPreview from './components/AppLayoutPreview';
+import EntryPage from './components/login';
+import './styles/login.css'; 
 
 function App() {
   return (

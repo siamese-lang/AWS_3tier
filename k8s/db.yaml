@@ -4,7 +4,7 @@ metadata:
   name: db-svc
 spec:
   selector:
-    app: mydb
+    app: mariadb
   ports:
   - port: 3306
     targetPort: 3306
@@ -13,20 +13,20 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mydb
+  name: mariadb
 spec:
   selector:
     matchLabels:
-      app: mydb
+      app: mariadb
   serviceName: db-svc
   replicas: 1
   template:
     metadata:
       labels:
-        app: mydb
+        app: mariadb
     spec:
       containers:
-      - name: mydb
+      - name: mariadb
         image: mariadb:latest
         ports:
         - containerPort: 3306

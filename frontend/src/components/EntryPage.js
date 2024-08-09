@@ -4,10 +4,13 @@ import { useNavigate } from 'react-router-dom';
 function EntryPage() {
   const [currentView, setCurrentView] = useState("logIn");
   const [formData, setFormData] = useState({ username: '', email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const changeView = (view) => {
     setCurrentView(view);
+    setError('');
   };
 
   const handleInputChange = (e) => {
@@ -21,13 +24,16 @@ function EntryPage() {
     const url = currentView === "signUp" ? `${apiUrl}/api/register` : 
                 currentView === "logIn" ? `${apiUrl}/api/login` : 
                 `${apiUrl}/api/reset-password`;
-  
+
+    const formBody = new URLSearchParams(formData).toString();
+
     const options = {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formBody,
+      credentials: 'include'  // 이 부분 추가
     };
-  
+
     fetch(url, options)
       .then(response => {
         if (response.ok) {
@@ -40,6 +46,12 @@ function EntryPage() {
         } else {
           alert('Operation failed');
         }
+      })
+      .catch(error => {
+        setError(`Operation failed: ${error.message}`);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -66,10 +78,11 @@ function EntryPage() {
                 </li>
               </ul>
             </fieldset>
-            <button type="submit">Submit</button>
-            <button type="button" onClick={() => changeView("logIn")}>
+            <button type="submit" disabled={loading}>{loading ? 'Submitting...' : 'Submit'}</button>
+            <button type="button" onClick={() => changeView("logIn")} disabled={loading}>
               Have an Account?
             </button>
+            {error && <p className="error">{error}</p>}
           </form>
         );
       case "logIn":
@@ -94,10 +107,11 @@ function EntryPage() {
                 </li>
               </ul>
             </fieldset>
-            <button type="submit">Login</button>
-            <button type="button" onClick={() => changeView("signUp")}>
+            <button type="submit" disabled={loading}>{loading ? 'Logging in...' : 'Login'}</button>
+            <button type="button" onClick={() => changeView("signUp")} disabled={loading}>
               Create an Account
             </button>
+            {error && <p className="error">{error}</p>}
           </form>
         );
       case "PWReset":
@@ -116,10 +130,11 @@ function EntryPage() {
                 </li>
               </ul>
             </fieldset>
-            <button type="submit">Send Reset Link</button>
-            <button type="button" onClick={() => changeView("logIn")}>
+            <button type="submit" disabled={loading}>{loading ? 'Sending...' : 'Send Reset Link'}</button>
+            <button type="button" onClick={() => changeView("logIn")} disabled={loading}>
               Go Back
             </button>
+            {error && <p className="error">{error}</p>}
           </form>
         );
       default:
@@ -132,6 +147,6 @@ function EntryPage() {
       {renderView()}
     </section>
   );
-};
+}
 
 export default EntryPage;

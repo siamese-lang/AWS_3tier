@@ -3,7 +3,6 @@ package com.amazoonS3.mini.service;
 import com.amazoonS3.mini.mapper.UserMapper;
 import com.amazoonS3.mini.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

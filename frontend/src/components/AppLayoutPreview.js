@@ -1,9 +1,9 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import {
   AppLayout,
   BreadcrumbGroup,
-  Container,
   ContentLayout,
   Flashbar,
   Header,
@@ -12,18 +12,41 @@ import {
   SideNavigation,
   SplitPanel,
   Button,
+  TextContent,
 } from '@cloudscape-design/components';
 import { I18nProvider } from '@cloudscape-design/components/i18n';
 import messages from '@cloudscape-design/components/i18n/messages/all.en';
 import { useNavigate } from 'react-router-dom';
 import BoardContainer from './BoardContainer';
-import axios from 'axios';
 
 const LOCALE = 'en';
 
 function AppLayoutPreview() {
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
+  // Fetch user authentication status and user info
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        // Add withCredentials: true to include cookies in the request
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/check-auth`, { withCredentials: true });
+        console.log(response);
+        if (response.data.authenticated) {
+          setUser(response.data.username);
+        } else {
+          navigate('/login');
+        }
+      } catch (error) {
+        console.error('Authentication check failed:', error);
+        navigate('/login');
+      }
+    };
+
+    checkAuth();
+  }, [navigate]);
+
+  // Handle logout
   const handleLogout = async () => {
     try {
       await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/logout`);
@@ -84,10 +107,13 @@ function AppLayoutPreview() {
               </Header>
             }
           >
-            <BoardContainer />
+            <TextContent>
+              <h2>Welcome, {user || 'Guest'}!</h2>
+              <BoardContainer />
+            </TextContent>
+            <SplitPanel header="Split panel header">Split panel content</SplitPanel>
           </ContentLayout>
         }
-        splitPanel={<SplitPanel header="Split panel header">Split panel content</SplitPanel>}
       />
     </I18nProvider>
   );

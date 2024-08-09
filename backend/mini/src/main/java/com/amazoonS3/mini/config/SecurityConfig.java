@@ -4,57 +4,42 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
-@EnableWebSecurity
 public class SecurityConfig {
 
     @Value("${frontend.url}")
-    private String frontendUrl;
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
+    private String FRONTEND_URL;
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(authorizeRequests ->
-                authorizeRequests
-                    .requestMatchers("/register", "/api/register", "/api/login", "/api/reset-password").permitAll() // Allow unauthenticated access
-                    .anyRequest().authenticated() // All other requests require authentication
-            )
-            .formLogin(formLogin ->
-                formLogin
-                    .loginProcessingUrl("/api/login")
-                    .successHandler((request, response, authentication) -> 
-                        response.sendRedirect(frontendUrl + "/home") // Redirect to /home on the frontend after successful login
-                    )
-                    .permitAll()
-            )
-            .logout(logout ->
-                logout
-                    .logoutUrl("/api/logout")
-                    .logoutSuccessHandler((request, response, authentication) -> 
-                        response.sendRedirect(frontendUrl + "/login?logout") // Redirect to /login on the frontend after logout
-                    )
-                    .permitAll()
-            )
-            .exceptionHandling(exceptionHandling ->
-                exceptionHandling
-                    .authenticationEntryPoint((request, response, authException) -> 
-                        response.sendRedirect(frontendUrl + "/login") // Redirect to /login on the frontend if not authenticated
-                    )
-            )
-            .addFilterBefore(new CustomAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // Optional: Custom filter if needed
+            .csrf().disable()  // CSRF 비활성화
+            .cors().configurationSource(corsConfigurationSource()) // CORS 설정 추가
+            .and()
+            .authorizeRequests()
+            .anyRequest().permitAll();  // 모든 요청에 대해 인증 비활성화
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList(FRONTEND_URL)); // 허용할 프론트엔드 도메인
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드
+        config.setAllowCredentials(true); // 쿠키를 포함한 자격 증명을 허용
+        config.setAllowedHeaders(Arrays.asList("*")); // 허용할 헤더 설정
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config); // 모든 경로에 대해 CORS 설정 적용
+
+        return source;
     }
 }

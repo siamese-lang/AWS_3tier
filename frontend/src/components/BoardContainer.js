@@ -73,12 +73,12 @@ function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated}) {
         return;
       }
       
-      console.log('Updating item:', updatedItem); // 디버깅을 위한 로그 추가
+      console.log('Updating item:', updatedItem);
       const serverUpdatedItem = await updateBoardItem(updatedItem);
       console.log('Server updated item:', serverUpdatedItem);
   
       setItems(prevItems =>
-        prevItems.map(i => i.bidx === updatedItem.bidx ? {...i, ...serverUpdatedItem} : i)
+        prevItems.map(i => i.bidx === updatedItem.bidx ? {...i, ...updatedItem, ...serverUpdatedItem} : i)
       );
       setIsFormVisible(false);
       setIsEditing(false);
@@ -87,7 +87,7 @@ function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated}) {
       console.error('Error updating item:', error);
     }
   }, []);
-  
+
   const handleDelete = useCallback(async (bidx) => {
     try {
       await deleteBoardItem(bidx);
@@ -184,11 +184,14 @@ function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated}) {
     >
 {isFormVisible && (
   isEditing ? (
-    <UpdateItemForm
-      initialData={editItem}
-      onSubmit={(updatedData) => handleUpdate({...editItem, ...updatedData})}
-      onCancel={() => { setIsFormVisible(false); setIsEditing(false); setEditItem(null); }}
-    />
+<UpdateItemForm
+  initialData={editItem}
+  onSubmit={(updatedData) => {
+    console.log('Updated data:', updatedData);
+    handleUpdate({...editItem, ...updatedData});
+  }}
+  onCancel={() => { setIsFormVisible(false); setIsEditing(false); setEditItem(null); }}
+/>
   ) : (
     <NewItemForm
       onSubmit={handleCreate}

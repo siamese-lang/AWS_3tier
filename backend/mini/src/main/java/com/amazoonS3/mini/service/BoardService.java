@@ -35,4 +35,19 @@ public class BoardService {
     public void deleteBoard(int bIdx) {
         boardMapper.deleteBoard(bIdx);
     }
+
+
+    public Board updateLikes(int bIdx, int likes) {
+        Board board = boardMapper.getBoardById(bIdx);
+        board.setLikes(likes);
+        boardMapper.updateLikes(board);
+        return board;
+    }
+
+    public Board updateDislikes(int bIdx, int dislikes) {
+        Board board = boardMapper.getBoardById(bIdx);
+        board.setDislikes(dislikes);
+        boardMapper.updateDislikes(board);
+        return board;
+    }
 }

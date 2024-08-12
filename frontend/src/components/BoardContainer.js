@@ -5,6 +5,7 @@ import BoardItem from "@cloudscape-design/board-components/board-item";
 import NewItemForm from './NewItemForm';
 import UpdateItemForm from './UpdateItemForm';
 import { fetchBoardItems, createBoardItem, updateBoardItem, deleteBoardItem } from '../api/board';
+import axios from 'axios';
 
 function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated, onItemDeleted}) {
   const [items, setItems] = useState([]);
@@ -30,8 +31,10 @@ function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated, onItemDel
 
   const handleLike = useCallback(async (item) => {
     try {
-      const updatedItem = {...item, likes: (item.likes || 0) + 1};
-      await updateBoardItem(updatedItem);
+      const response = await axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/board/${item.bidx}/likes`, {
+        likes: (item.likes || 0) + 1
+      }, { withCredentials: true });
+      const updatedItem = response.data.data;
       setItems(prevItems =>
         prevItems.map(i => i.bidx === item.bidx ? {...i, likes: updatedItem.likes} : i)
       );
@@ -43,8 +46,10 @@ function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated, onItemDel
   
   const handleDislike = useCallback(async (item) => {
     try {
-      const updatedItem = {...item, dislikes: (item.dislikes || 0) + 1};
-      await updateBoardItem(updatedItem);
+      const response = await axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/board/${item.bidx}/dislikes`, {
+        dislikes: (item.dislikes || 0) + 1
+      }, { withCredentials: true });
+      const updatedItem = response.data.data;
       setItems(prevItems =>
         prevItems.map(i => i.bidx === item.bidx ? {...i, dislikes: updatedItem.dislikes} : i)
       );
@@ -99,7 +104,7 @@ function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated, onItemDel
       console.error('Error deleting item:', error);
     }
   }, [onItemDeleted]);
-  
+
   const handleItemsChange = (event) => {
     const updatedItems = event.detail.items;
     setItems(updatedItems);

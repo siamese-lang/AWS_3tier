@@ -28,4 +28,12 @@
         DELETE FROM board WHERE b_idx=#{bIdx}
     </delete>
 
+    <update id="updateLikes">
+        UPDATE board SET likes = #{likes} WHERE b_idx = #{bIdx}
+    </update>
+
+    <update id="updateDislikes">
+        UPDATE board SET dislikes = #{dislikes} WHERE b_idx = #{bIdx}
+    </update>
+
 </mapper>

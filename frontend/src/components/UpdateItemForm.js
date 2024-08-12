@@ -14,7 +14,13 @@ function UpdateItemForm({ initialData, onSubmit, onCancel }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSubmit(title, content);
+    const updatedItem = {
+      ...initialData,
+      title,
+      content
+    };
+    console.log('Submitting updated item:', updatedItem); // 디버깅을 위한 로그 추가
+    onSubmit(updatedItem);
   };
 
   return (

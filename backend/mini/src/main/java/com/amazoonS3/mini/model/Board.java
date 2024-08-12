@@ -7,6 +7,8 @@ public class Board {
     private int columnSpan;
     private String title;
     private String content;
+    private int likes;
+    private int dislikes;
 
     public int getBIdx() {
         return this.bIdx;
@@ -46,6 +48,23 @@ public class Board {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    // Getter와 Setter 메서드 추가
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public int getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(int dislikes) {
+        this.dislikes = dislikes;
     }
 
 }

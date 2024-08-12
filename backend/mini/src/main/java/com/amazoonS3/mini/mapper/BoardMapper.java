@@ -17,4 +17,7 @@ public interface BoardMapper {
     Board getBoardById(int bIdx);
 
     void deleteBoard(int bIdx);
+
+    void updateLikes(Board board);
+    void updateDislikes(Board board);
 }

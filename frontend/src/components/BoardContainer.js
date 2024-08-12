@@ -5,8 +5,9 @@ import BoardItem from "@cloudscape-design/board-components/board-item";
 import NewItemForm from './NewItemForm';
 import UpdateItemForm from './UpdateItemForm';
 import { fetchBoardItems, createBoardItem, updateBoardItem, deleteBoardItem } from '../api/board';
+import axios from 'axios';
 
-function BoardContainer() {
+function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated, onItemDeleted}) {
   const [items, setItems] = useState([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -17,7 +18,7 @@ function BoardContainer() {
       try {
         const response = await fetchBoardItems();
         if (Array.isArray(response)) {
-          setItems(response);
+          setItems(response.map(item => ({...item, likes: item.likes || 0})));
         } else {
           console.error('Unexpected response format:', response);
         }
@@ -28,29 +29,61 @@ function BoardContainer() {
     loadItems();
   }, []);
 
+  const handleLike = useCallback(async (item) => {
+    try {
+      const response = await axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/board/${item.bidx}/likes`, {
+        likes: (item.likes || 0) + 1
+      }, { withCredentials: true });
+      const updatedItem = response.data.data;
+      setItems(prevItems =>
+        prevItems.map(i => i.bidx === item.bidx ? {...i, likes: updatedItem.likes} : i)
+      );
+      onLikeUpdate(updatedItem);
+    } catch (error) {
+      console.error('Error updating likes:', error);
+    }
+  }, [onLikeUpdate]);
+  
+  const handleDislike = useCallback(async (item) => {
+    try {
+      const response = await axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/board/${item.bidx}/dislikes`, {
+        dislikes: (item.dislikes || 0) + 1
+      }, { withCredentials: true });
+      const updatedItem = response.data.data;
+      setItems(prevItems =>
+        prevItems.map(i => i.bidx === item.bidx ? {...i, dislikes: updatedItem.dislikes} : i)
+      );
+      onDislikeUpdate(updatedItem);
+    } catch (error) {
+      console.error('Error updating dislikes:', error);
+    }
+  }, [onDislikeUpdate]);
+
   const handleCreate = useCallback(async (newItem) => {
     try {
       const response = await createBoardItem(newItem);
-      const createdItem = { ...newItem, ...response }; // Adjust based on actual API response
+      const createdItem = { ...response, likes: response.likes || 0, dislikes: response.dislikes || 0 };
       setItems(prevItems => [...prevItems, createdItem]);
       setIsFormVisible(false);
+      onItemCreated(createdItem);
     } catch (error) {
       console.error('Error creating item:', error);
     }
-  }, []);
-
-  const handleUpdate = useCallback(async (item) => {
+  }, [onItemCreated]);
+  
+  const handleUpdate = useCallback(async (updatedItem) => {
     try {
-      if (!item.bidx) {
+      if (!updatedItem || !updatedItem.bidx) {
         console.error('Item ID (bidx) is missing.');
         return;
       }
-
-      const response = await updateBoardItem(item);
-      const updatedItem = response.data.data; // Assume response contains the updated item
-
+      
+      console.log('Updating item:', updatedItem);
+      const serverUpdatedItem = await updateBoardItem(updatedItem);
+      console.log('Server updated item:', serverUpdatedItem);
+  
       setItems(prevItems =>
-        prevItems.map(i => i.bidx === item.bidx ? updatedItem : i)
+        prevItems.map(i => i.bidx === updatedItem.bidx ? {...i, ...updatedItem, ...serverUpdatedItem} : i)
       );
       setIsFormVisible(false);
       setIsEditing(false);
@@ -66,10 +99,11 @@ function BoardContainer() {
       setItems(prevItems =>
         prevItems.filter(item => item.bidx !== bidx)
       );
+      onItemDeleted(bidx);
     } catch (error) {
       console.error('Error deleting item:', error);
     }
-  }, []);
+  }, [onItemDeleted]);
 
   const handleItemsChange = (event) => {
     const updatedItems = event.detail.items;
@@ -150,54 +184,85 @@ function BoardContainer() {
       header={
         <Header variant="h2" description="Container description">
           Container header
-          <Button onClick={() => { setIsFormVisible(true); setEditItem(null); }}>Add Item</Button>
+          <Button onClick={() => { setIsFormVisible(true); setIsEditing(false); setEditItem(null); }}>Add Item</Button>
         </Header>
       }
     >
-      {isFormVisible && (
-        isEditing ? (
-          <UpdateItemForm
-            initialData={editItem}
-            onCancel={() => {
-              setIsFormVisible(false);
-              setEditItem(null);
-              setIsEditing(false);
-            }}
-            onSubmit={(title, content) => handleUpdate({ ...editItem, title, content })}
-          />
-        ) : (
-          <NewItemForm
-            onCancel={() => {
-              setIsFormVisible(false);
-              setEditItem(null);
-            }}
-            onSubmit={(title, content) => handleCreate({ rowSpan: 1, columnSpan: 2, title, content })}
-          />
-        )
-      )}
+{isFormVisible && (
+  isEditing ? (
+<UpdateItemForm
+  initialData={editItem}
+  onSubmit={(updatedData) => {
+    console.log('Updated data:', updatedData);
+    handleUpdate({...editItem, ...updatedData});
+  }}
+  onCancel={() => { setIsFormVisible(false); setIsEditing(false); setEditItem(null); }}
+/>
+  ) : (
+    <NewItemForm
+      onSubmit={handleCreate}
+      onCancel={() => setIsFormVisible(false)}
+    />
+  )
+)}
       <Board
-        renderItem={item => (
-          <BoardItem
-            key={item.bidx}
-            header={<Header>{item.title || 'No Title'}</Header>}
-            i18nStrings={i18nStrings}
+renderItem={(item) => (
+  <BoardItem
+    key={item.bidx}
+    header={<Header variant="h3">{item.title || 'No Title'}</Header>}
+    i18nStrings={i18nStrings}
+    columnSpan={1}
+  >
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <div style={{ flex: 1, marginBottom: '10px', fontSize: '14px', color: '#333' }}>
+        {item.content || 'No Content'}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+
+<Button 
+  onClick={() => handleLike(item)}
+  variant="icon"
+  iconName="thumbs-up"
+>
+  {item.likes > 0 ? item.likes : ''}
+</Button>
+
+<Button 
+  onClick={() => handleDislike(item)}
+  variant="icon"
+  iconName="thumbs-down"
+>
+  {item.dislikes > 0 ? item.dislikes : ''}
+</Button>
+
+        </div>
+        <div>
+          <Button 
+            onClick={() => {
+              setEditItem(item);
+              setIsFormVisible(true);
+              setIsEditing(true);
+            }}
+            variant="normal"
           >
-            <div>
-              {item.content || 'No Content'}
-              <Button onClick={() => {
-                setEditItem(item);
-                setIsFormVisible(true);
-                setIsEditing(true);
-              }}>
-                Edit
-              </Button>
-              <Button onClick={() => handleDelete(item.bidx)}>Delete</Button>
-            </div>
-          </BoardItem>
-        )}
+            Edit
+          </Button>
+          <Button 
+            onClick={() => handleDelete(item.bidx)}
+            variant="normal"
+          >
+            Delete
+          </Button>
+        </div>
+      </div>
+    </div>
+  </BoardItem>
+)}
         onItemsChange={handleItemsChange}
-        items={items} // Directly use items as an array
+        items={items}
         i18nStrings={i18nStrings}
+        columnDefinitions={[{ width: 1 }, { width: 1 }]}
       />
     </Container>
   );

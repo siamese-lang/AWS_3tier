@@ -54,4 +54,21 @@ public class BoardController {
         response.put("data", "Board item deleted successfully");
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/{bIdx}/likes")
+    public ResponseEntity<Map<String, Object>> updateLikes(@PathVariable int bIdx, @RequestBody Map<String, Integer> payload) {
+        Board updatedBoard = boardService.updateLikes(bIdx, payload.get("likes"));
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", updatedBoard);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{bIdx}/dislikes")
+    public ResponseEntity<Map<String, Object>> updateDislikes(@PathVariable int bIdx, @RequestBody Map<String, Integer> payload) {
+        Board updatedBoard = boardService.updateDislikes(bIdx, payload.get("dislikes"));
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", updatedBoard);
+        return ResponseEntity.ok(response);
+    }
+
 }

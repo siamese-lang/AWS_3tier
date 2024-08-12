@@ -7,7 +7,7 @@ function NewItemForm({ onSubmit, onCancel }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSubmit(title, content);
+    onSubmit({ title, content });
   };
 
   return (

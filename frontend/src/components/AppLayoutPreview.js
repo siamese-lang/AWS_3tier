@@ -29,11 +29,13 @@ function AppLayoutPreview() {
 
   const navigate = useNavigate();
 
+  const handleItemCreated = (newItem) => {
+    setBoardItems(prevItems => [...prevItems, newItem]);
+  };
   // Fetch user authentication status and user info
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Add withCredentials: true to include cookies in the request
         const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/check-auth`, { withCredentials: true });
         console.log(response);
         if (response.data.authenticated) {
@@ -62,6 +64,19 @@ function AppLayoutPreview() {
   
     loadBoardItems();
   }, []);
+
+  const handleLikeUpdate = (updatedItem) => {
+    setBoardItems(prevItems =>
+      prevItems.map(item => item.bidx === updatedItem.bidx ? updatedItem : item)
+    );
+  };
+  
+  const handleDislikeUpdate = (updatedItem) => {
+    setBoardItems(prevItems =>
+      prevItems.map(item => item.bidx === updatedItem.bidx ? updatedItem : item)
+    );
+  };
+
   // Handle logout
   const handleLogout = async () => {
     try {
@@ -104,17 +119,17 @@ function AppLayoutPreview() {
               items: boardItems.map((item) => ({
                 type: 'link',
                 text: (
-                <div>
-                  <span style={{ fontWeight: 'bold', color: '#0073bb' }}>
-                    {item.title}
-                  </span>
                   <div>
-                    <span style={{ fontSize: '0.8em', color: '#687078' }}>
-                      👍 좋아요: {item.likes || 0}
+                    <span style={{ fontWeight: 'bold', color: '#0073bb' }}>
+                      {item.title}
                     </span>
+                    <div>
+                      <span style={{ fontSize: '0.8em', color: '#687078' }}>
+                        👍 인기글: {(item.likes || 0) - (item.dislikes || 0)}
+                      </span>
+                    </div>
+                    <hr style={{ margin: '8px 0', borderTop: '1px solid #e1e4e8' }} />
                   </div>
-                  <hr style={{ margin: '8px 0', borderTop: '1px solid #e1e4e8' }} />
-                </div>
                 ),
                 href: `#item-${item.bidx}`,
               })),
@@ -152,10 +167,14 @@ function AppLayoutPreview() {
               </Header>
             }
           >
-            <TextContent>
-              <h2>Welcome, {user || 'Guest'}!</h2>
-              <BoardContainer />
-            </TextContent>
+<TextContent>
+  <h2>Welcome, {user || 'Guest'}!</h2>
+  <BoardContainer 
+    onLikeUpdate={handleLikeUpdate} 
+    onDislikeUpdate={handleDislikeUpdate}
+    onItemCreated={handleItemCreated}
+  />
+</TextContent>
             <SplitPanel header="Split panel header">Split panel content</SplitPanel>
           </ContentLayout>
         }

@@ -27,7 +27,16 @@ export const createBoardItem = async (item) => {
 };
 
 // Update a board item
-export const updateBoardItem = (item) => axios.put(`${API_BASE_URL}/api/board/${item.bidx}`, item, { withCredentials: true });
+//export const updateBoardItem = (item) => axios.put(`${API_BASE_URL}/api/board/${item.bidx}`, item, { withCredentials: true });
+export const updateBoardItem = async (item) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/api/board/${item.bidx}`, item, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating board item:', error);
+    throw error;
+  }
+};
 
 // Delete a board item
 export const deleteBoardItem = async (bIdx) => {

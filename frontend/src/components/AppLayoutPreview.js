@@ -72,12 +72,15 @@ function AppLayoutPreview() {
   const handleLikeUpdate = (updatedItem) => {
     setBoardItems(prevItems =>
       prevItems.map(item => item.bidx === updatedItem.bidx ? updatedItem : item)
+        .sort((a, b) => ((b.likes || 0) - (b.dislikes || 0)) - ((a.likes || 0) - (a.dislikes || 0)))
     );
   };
+  
   
   const handleDislikeUpdate = (updatedItem) => {
     setBoardItems(prevItems =>
       prevItems.map(item => item.bidx === updatedItem.bidx ? updatedItem : item)
+        .sort((a, b) => ((b.likes || 0) - (b.dislikes || 0)) - ((a.likes || 0) - (a.dislikes || 0)))
     );
   };
 
@@ -120,23 +123,25 @@ function AppLayoutPreview() {
             {
               type: 'section',
               text: '게시글 목록',
-              items: boardItems.map((item) => ({
-                type: 'link',
-                text: (
-                  <div>
-                    <span style={{ fontWeight: 'bold', color: '#0073bb' }}>
-                      {item.title}
-                    </span>
+              items: boardItems
+                .sort((a, b) => ((b.likes || 0) - (b.dislikes || 0)) - ((a.likes || 0) - (a.dislikes || 0)))
+                .map((item) => ({
+                  type: 'link',
+                  text: (
                     <div>
-                      <span style={{ fontSize: '0.8em', color: '#687078' }}>
-                        👍 인기글: {(item.likes || 0) - (item.dislikes || 0)}
+                      <span style={{ fontWeight: 'bold', color: '#0073bb' }}>
+                        {item.title}
                       </span>
+                      <div>
+                        <span style={{ fontSize: '0.8em', color: '#687078' }}>
+                          👍 인기도: {(item.likes || 0) - (item.dislikes || 0)}
+                        </span>
+                      </div>
+                      <hr style={{ margin: '8px 0', borderTop: '1px solid #e1e4e8' }} />
                     </div>
-                    <hr style={{ margin: '8px 0', borderTop: '1px solid #e1e4e8' }} />
-                  </div>
-                ),
-                href: `#item-${item.bidx}`,
-              })),
+                  ),
+                  href: `#item-${item.bidx}`,
+                })),
             },
           ]}
         />

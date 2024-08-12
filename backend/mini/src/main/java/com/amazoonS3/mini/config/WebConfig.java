@@ -22,7 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
     private String domainName;
     
     @Value("${useSecureCookie}")
-    private boolean useSecureCookie;
+    private String useSecureCookie;
 
     @Autowired
     private AuthInterceptor authInterceptor;
@@ -36,7 +36,7 @@ public class WebConfig implements WebMvcConfigurer {
         serializer.setDomainName(domainName); 
         serializer.setCookieMaxAge((int) Duration.ofHours(1).getSeconds());
         serializer.setSameSite("None"); // Cross-site 요청에서 쿠키를 보내도록 허용
-        serializer.setUseSecureCookie(useSecureCookie); // 로컬 개발 환경에서는 false, 실제 배포 환경에서는 true 설정 필요
+        serializer.setUseSecureCookie(Boolean.parseBoolean(useSecureCookie)); // 로컬 개발 환경에서는 false, 실제 배포 환경에서는 true 설정 필요
         return serializer;
     }
 

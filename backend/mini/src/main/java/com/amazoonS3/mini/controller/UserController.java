@@ -8,13 +8,22 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
 public class UserController {
+
+    @Value("${domainName}")
+    private String domainName;
 
     @Autowired
     private UserService userService;
@@ -33,26 +42,29 @@ public class UserController {
 
 
     @PostMapping("/login")
-public ResponseEntity<?> loginUser(@RequestParam String username, @RequestParam String password, HttpServletRequest request, HttpServletResponse response) {
-    User user = userService.authenticateUser(username, password);
+    public ResponseEntity<?> loginUser(@RequestParam String username, @RequestParam String password, HttpServletRequest request, HttpServletResponse response) {
+        User user = userService.authenticateUser(username, password);
 
-    if (user != null) {
-        HttpSession session = request.getSession(true); // 새로운 세션 생성
-        session.setAttribute("user", user);
+        if (user != null) {
+            HttpSession session = request.getSession(true); // 새로운 세션 생성
+            session.setAttribute("user", user);
 
-        Cookie idCookie = new Cookie("JSESSIONID", session.getId());
-        idCookie.setHttpOnly(true);
-        idCookie.setSecure(true);
-        idCookie.setPath("/");
-        idCookie.setDomain("localhost"); // 또는 설정된 도메인
-        idCookie.setMaxAge(3600); // 1시간
+            Cookie idCookie = new Cookie("JSESSIONID", session.getId());
+            idCookie.setHttpOnly(true);
+            idCookie.setSecure(true);
+            idCookie.setPath("/");
+            idCookie.setDomain(domainName); // 또는 설정된 도메인
 
-        response.addCookie(idCookie);
-        return ResponseEntity.ok().build();
+            // 현재 시간을 서울 시간으로 가져온 후, 1시간 후의 시간을 UTC로 변환
+            ZonedDateTime expiration = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).plusHours(1);
+            String expires = expiration.withZoneSameInstant(ZoneId.of("UTC")).format(DateTimeFormatter.RFC_1123_DATE_TIME);
+            response.addHeader("Set-Cookie", "JSESSIONID=" + session.getId() + "; Expires=" + expires + "; Path=/; Domain=" + domainName + "; Secure; HttpOnly; SameSite=None");
+
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
-
-    return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).body("Authentication Failed");
-}
 
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser(HttpServletRequest request) {

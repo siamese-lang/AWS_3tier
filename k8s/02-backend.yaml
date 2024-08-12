@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: was
-        image: sojh5741aws/mini:backend-https
+        image: sojh5741aws/mini:backend-https-v5
         ports:
         - containerPort: 8080
         imagePullPolicy: Always

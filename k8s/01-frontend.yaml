@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: web
-        image: sojh5741aws/mini:frontend-v9
+        image: sojh5741aws/mini:frontend-v10
         ports:
         - containerPort: 80
         imagePullPolicy: Always

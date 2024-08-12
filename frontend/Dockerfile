@@ -22,6 +22,12 @@ RUN npm run build
 # Use Nginx to serve the application
 FROM nginx:latest
 
+# Set timezone to Asia/Seoul (Debian-based)
+RUN apt-get update && apt-get install -y tzdata \
+    && ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime \
+    && echo "Asia/Seoul" > /etc/timezone \
+    && apt-get clean
+
 # Copy built application from previous stage
 COPY --from=build /app/build /usr/share/nginx/html
 

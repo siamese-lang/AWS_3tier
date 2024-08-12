@@ -14,20 +14,28 @@ metadata:
   name: mariadb-init-sql
 data:
   init.sql: |
-    CREATE TABLE user (
-      id INT(11) AUTO_INCREMENT PRIMARY KEY,
-      username VARCHAR(50) NOT NULL UNIQUE,
-      email VARCHAR(100) NOT NULL UNIQUE,
-      password VARCHAR(255) NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    CREATE TABLE IF NOT EXISTS `user` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `username` varchar(50) NOT NULL,
+      `email` varchar(100) NOT NULL,
+      `password` varchar(255) NOT NULL,
+      `created_at` timestamp NULL DEFAULT current_timestamp(),
+      `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `username` (`username`),
+      UNIQUE KEY `email` (`email`)
     );
 
-    CREATE TABLE `board` (
+    CREATE TABLE IF NOT EXISTS `board` (
       `b_idx` int(11) NOT NULL AUTO_INCREMENT,
       `row_span` int(11) DEFAULT NULL,
       `column_span` int(11) DEFAULT NULL,
       `title` varchar(300) DEFAULT NULL,
       `content` text DEFAULT NULL,
-      PRIMARY KEY (`b_idx`)
+      `likes` int(11) DEFAULT 0,
+      `dislikes` int(11) DEFAULT 0,
+      `username` varchar(50) DEFAULT NULL,
+      PRIMARY KEY (`b_idx`),
+      KEY `fk_board_user` (`username`),
+      CONSTRAINT `fk_board_user` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE SET NULL ON UPDATE CASCADE
     );

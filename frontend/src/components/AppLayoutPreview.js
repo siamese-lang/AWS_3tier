@@ -65,7 +65,8 @@ function AppLayoutPreview() {
   // Handle logout
   const handleLogout = async () => {
     try {
-      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/logout`);
+      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/logout`, {}, { withCredentials: true });
+      setUser(null);
       navigate('/login');
     } catch (error) {
       console.error('Logout failed:', error);

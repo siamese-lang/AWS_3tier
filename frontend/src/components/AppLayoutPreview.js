@@ -12,17 +12,21 @@ import {
   SideNavigation,
   SplitPanel,
   Button,
-  TextContent,
+  TextContent
 } from '@cloudscape-design/components';
 import { I18nProvider } from '@cloudscape-design/components/i18n';
 import messages from '@cloudscape-design/components/i18n/messages/all.en';
 import { useNavigate } from 'react-router-dom';
 import BoardContainer from './BoardContainer';
 
+import { fetchBoardItems } from '../api/board';
 const LOCALE = 'en';
 
 function AppLayoutPreview() {
   const [user, setUser] = useState(null);
+
+  const [boardItems, setBoardItems] = useState([]);
+
   const navigate = useNavigate();
 
   // Fetch user authentication status and user info
@@ -46,6 +50,18 @@ function AppLayoutPreview() {
     checkAuth();
   }, [navigate]);
 
+  useEffect(() => {
+    const loadBoardItems = async () => {
+      try {
+        const items = await fetchBoardItems();
+        setBoardItems(items);
+      } catch (error) {
+        console.error('게시물 불러오기 실패:', error);
+      }
+    };
+  
+    loadBoardItems();
+  }, []);
   // Handle logout
   const handleLogout = async () => {
     try {
@@ -69,13 +85,41 @@ function AppLayoutPreview() {
         }
         navigationOpen={true}
         navigation={
-          <SideNavigation
-            header={{
-              href: '#',
-              text: 'Service name',
-            }}
-            items={[{ type: 'link', text: `Page #1`, href: `#` }]}
-          />
+        <SideNavigation
+          header={{
+            href: '#',
+            text: '서비스 이름',
+          }}
+          items={[
+            { 
+              type: 'link', 
+              text: '홈', 
+              href: '#', 
+              info: <Link variant="info" fontSize="body-s" fontWeight="bold">메인 페이지</Link> 
+            },
+            {
+              type: 'section',
+              text: '게시글 목록',
+              items: boardItems.map((item) => ({
+                type: 'link',
+                text: (
+                <div>
+                  <span style={{ fontWeight: 'bold', color: '#0073bb' }}>
+                    {item.title}
+                  </span>
+                  <div>
+                    <span style={{ fontSize: '0.8em', color: '#687078' }}>
+                      👍 좋아요: {item.likes || 0}
+                    </span>
+                  </div>
+                  <hr style={{ margin: '8px 0', borderTop: '1px solid #e1e4e8' }} />
+                </div>
+                ),
+                href: `#item-${item.bidx}`,
+              })),
+            },
+          ]}
+        />
         }
         notifications={
           <Flashbar

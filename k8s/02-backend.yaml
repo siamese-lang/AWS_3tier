@@ -2,6 +2,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: was-svc
+  annotations:
+    cloud.google.com/backend-config: '{"default": "my-backend-config"}'
 spec:
   selector:
     app: was
@@ -25,7 +27,7 @@ spec:
     spec:
       containers:
       - name: was
-        image: sojh5741aws/mini:backend-v1
+        image: sojh5741aws/mini:backend-https
         ports:
         - containerPort: 8080
         imagePullPolicy: Always

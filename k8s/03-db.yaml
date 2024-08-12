@@ -28,6 +28,8 @@ spec:
       containers:
       - name: mariadb
         image: mariadb:latest
+        args:
+          - "--ignore-db-dir=lost+found"
         ports:
         - containerPort: 3306
           name: tcp
@@ -68,3 +70,20 @@ spec:
             secretKeyRef:
               name: mysql-secret
               key: MARIADB_PASSWORD
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+        - name: init-sql
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: init-sql
+        configMap:
+          name: mariadb-init-sql
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi

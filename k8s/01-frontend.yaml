@@ -2,13 +2,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: web-svc
+  annotations:
+    cloud.google.com/frontend-config: '{"default": "my-frontend-config"}'
 spec:
   selector:
     app: web
   ports:
   - port: 80
     targetPort: 80
-  type: LoadBalancer
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -26,13 +27,13 @@ spec:
     spec:
       containers:
       - name: web
-        image: sojh5741aws/mini:frontend-v2
+        image: sojh5741aws/mini:frontend-v9
         ports:
         - containerPort: 80
         imagePullPolicy: Always
-        env:
-        - name: REACT_APP_API_BASE_URL
-          valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: REACT_APP_API_BASE_URL
+        # env:
+        # - name: REACT_APP_API_BASE_URL
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: app-config
+        #       key: REACT_APP_API_BASE_URL

@@ -5,13 +5,13 @@ metadata:
 data:
   MARIADB_HOST: "db-svc"
   MARIADB_PORT: "3306"
-  FRONTEND_URL: "http://web-svc"
-  REACT_APP_API_BASE_URL: "http://was-svc.default.svc.cluster.local:8080"
+  FRONTEND_URL: "https://www.so-cute.shop"
+  REACT_APP_API_BASE_URL: "https://www.so-cute.shop" #"http://was-svc.default.svc.cluster.local:8080"
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mysql-init-sql
+  name: mariadb-init-sql
 data:
   init.sql: |
     CREATE TABLE user (

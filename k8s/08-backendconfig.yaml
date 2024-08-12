@@ -1,0 +1,13 @@
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: my-backend-config
+spec:
+  healthCheck:
+    checkIntervalSec: 30
+    timeoutSec: 10
+    healthyThreshold: 1
+    unhealthyThreshold: 3
+    type: HTTP
+    requestPath: /actuator/health  # Spring Boot의 기본 헬스체크 경로
+    port: 8080

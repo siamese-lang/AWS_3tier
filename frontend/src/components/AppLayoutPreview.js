@@ -32,6 +32,10 @@ function AppLayoutPreview() {
   const handleItemCreated = (newItem) => {
     setBoardItems(prevItems => [...prevItems, newItem]);
   };
+
+  const handleItemDeleted = (deletedItemId) => {
+    setBoardItems(prevItems => prevItems.filter(item => item.bidx !== deletedItemId));
+  };
   // Fetch user authentication status and user info
   useEffect(() => {
     const checkAuth = async () => {
@@ -173,6 +177,7 @@ function AppLayoutPreview() {
     onLikeUpdate={handleLikeUpdate} 
     onDislikeUpdate={handleDislikeUpdate}
     onItemCreated={handleItemCreated}
+    onItemDeleted={handleItemDeleted}
   />
 </TextContent>
             <SplitPanel header="Split panel header">Split panel content</SplitPanel>

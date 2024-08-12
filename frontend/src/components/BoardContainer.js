@@ -6,7 +6,7 @@ import NewItemForm from './NewItemForm';
 import UpdateItemForm from './UpdateItemForm';
 import { fetchBoardItems, createBoardItem, updateBoardItem, deleteBoardItem } from '../api/board';
 
-function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated}) {
+function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated, onItemDeleted}) {
   const [items, setItems] = useState([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -94,11 +94,12 @@ function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated}) {
       setItems(prevItems =>
         prevItems.filter(item => item.bidx !== bidx)
       );
+      onItemDeleted(bidx);
     } catch (error) {
       console.error('Error deleting item:', error);
     }
-  }, []);
-
+  }, [onItemDeleted]);
+  
   const handleItemsChange = (event) => {
     const updatedItems = event.detail.items;
     setItems(updatedItems);
@@ -214,19 +215,20 @@ renderItem={(item) => (
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
 
-        <Button 
+<Button 
   onClick={() => handleLike(item)}
   variant="icon"
   iconName="thumbs-up"
 >
-  {item.likes ?? 0}
+  {item.likes > 0 ? item.likes : ''}
 </Button>
+
 <Button 
   onClick={() => handleDislike(item)}
   variant="icon"
   iconName="thumbs-down"
 >
-  {item.dislikes ?? 0}
+  {item.dislikes > 0 ? item.dislikes : ''}
 </Button>
 
         </div>

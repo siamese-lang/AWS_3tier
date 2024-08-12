@@ -7,8 +7,8 @@ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 export const fetchBoardItems = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/api/board`, { withCredentials: true });
-    // Ensure the response data contains the 'data' field
-    return response.data.data || [];
+    // Ensure the response data contains the 'data' field and initialize likes if not present
+    return (response.data.data || []).map(item => ({...item, likes: item.likes || 0}));
   } catch (error) {
     console.error('Error fetching board items:', error);
     return [];

@@ -78,7 +78,7 @@ public class BoardController {
     }
 
 
-    @DeleteMapping("/board/{id}")
+    @DeleteMapping("/{bIdx}")
     public ResponseEntity<?> deleteBoard(@PathVariable int id, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {

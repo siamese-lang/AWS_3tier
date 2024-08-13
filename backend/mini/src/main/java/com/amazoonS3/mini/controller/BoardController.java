@@ -54,14 +54,11 @@ public class BoardController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // 쿠키에서 username 추출
-        String username = userService.getUsernameFromCookie(request);
+        String username = (String) session.getAttribute("username");
         if (username == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Board 객체에서 작성자(username) 설정
-        board.setBIdx(bIdx);
         Board existingBoard = boardService.getBoardById(bIdx);
         if (existingBoard == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -71,6 +68,9 @@ public class BoardController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
+        board.setBIdx(bIdx);
+        board.setUsername(username);  // 현재 로그인한 사용자의 이름으로 설정
+
         Board updatedBoard = boardService.updateBoard(board);
         Map<String, Object> response = new HashMap<>();
         response.put("data", updatedBoard);
@@ -79,22 +79,34 @@ public class BoardController {
 
 
     @DeleteMapping("/{bIdx}")
-    public ResponseEntity<?> deleteBoard(@PathVariable int id, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<?> deleteBoard(@PathVariable int bIdx, HttpServletRequest request) {
+        try {
+            HttpSession session = request.getSession(false);
+            if (session == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            String currentUsername = (String) session.getAttribute("username");
+            if (currentUsername == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            Board board = boardService.getBoardById(bIdx);
+
+            if (board == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            if (currentUsername.equals(board.getUsername())) {
+                boardService.deleteBoard(bIdx);
+                return ResponseEntity.ok().build();
+            }
+
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting the board");
         }
-
-        String currentUsername = (String) session.getAttribute("username");
-        Board board = boardService.getBoardById(id);
-
-        if (board != null && currentUsername.equals(board.getUsername())) {
-            // 게시판 삭제 로직
-            boardService.deleteBoard(id);
-            return ResponseEntity.ok().build();
-        }
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @PutMapping("/{bIdx}/likes")

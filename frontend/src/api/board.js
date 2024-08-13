@@ -38,7 +38,6 @@ export const updateBoardItem = async (item) => {
   }
 };
 
-// Delete a board item
 export const deleteBoardItem = async (bIdx) => {
   try {
     await axios.delete(`${API_BASE_URL}/api/board/${bIdx}`, { withCredentials: true });

@@ -48,53 +48,17 @@ public class BoardController {
     }
 
     @PutMapping("/{bIdx}")
-    public ResponseEntity<Map<String, Object>> updateBoard(@PathVariable int bIdx, @RequestBody Board board, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        // 쿠키에서 username 추출
-        String username = userService.getUsernameFromCookie(request);
-        if (username == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        // Board 객체에서 작성자(username) 설정
+    public ResponseEntity<Board> updateBoard(@PathVariable int bIdx, @RequestBody Board board) {
         board.setBIdx(bIdx);
-        Board existingBoard = boardService.getBoardById(bIdx);
-        if (existingBoard == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        if (!username.equals(existingBoard.getUsername())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
         Board updatedBoard = boardService.updateBoard(board);
-        Map<String, Object> response = new HashMap<>();
-        response.put("data", updatedBoard);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(updatedBoard);
     }
 
 
     @DeleteMapping("/{bIdx}")
-    public ResponseEntity<?> deleteBoard(@PathVariable int id, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        String currentUsername = (String) session.getAttribute("username");
-        Board board = boardService.getBoardById(id);
-
-        if (board != null && currentUsername.equals(board.getUsername())) {
-            // 게시판 삭제 로직
-            boardService.deleteBoard(id);
-            return ResponseEntity.ok().build();
-        }
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    public ResponseEntity<Void> deleteBoard(@PathVariable int bIdx) {
+        boardService.deleteBoard(bIdx);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{bIdx}/likes")
@@ -112,5 +76,4 @@ public class BoardController {
         response.put("data", updatedBoard);
         return ResponseEntity.ok(response);
     }
-
 }

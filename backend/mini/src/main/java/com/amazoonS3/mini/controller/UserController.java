@@ -66,13 +66,24 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutUser(HttpServletRequest request) {
+    public ResponseEntity<?> logoutUser(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate(); // 세션 무효화
         }
+
+        // 쿠키 무효화
+        Cookie idCookie = new Cookie("JSESSIONID", null); // 쿠키 값을 null로 설정
+        idCookie.setPath("/");
+        idCookie.setDomain(domainName); // 동일한 도메인 설정
+        idCookie.setMaxAge(0); // Max-Age를 0으로 설정하여 쿠키 즉시 삭제
+        idCookie.setHttpOnly(true);
+        idCookie.setSecure(true);
+        response.addCookie(idCookie); // 쿠키 추가
+
         return ResponseEntity.ok().body("Logged out successfully");
     }
+
 
     @PostMapping("/reset-password")
     public void resetPassword(

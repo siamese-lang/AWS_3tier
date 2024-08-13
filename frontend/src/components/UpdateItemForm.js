@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, FormField, Input } from '@cloudscape-design/components';
 
-function UpdateItemForm({ initialData, onSubmit, onCancel }) {
+function UpdateItemForm({ initialData, onSubmit, onCancel, user }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
@@ -17,9 +17,10 @@ function UpdateItemForm({ initialData, onSubmit, onCancel }) {
     const updatedItem = {
       ...initialData,
       title,
-      content
+      content,
+      author: user
     };
-    console.log('Submitting updated item:', updatedItem); // 디버깅을 위한 로그 추가
+    console.log('Submitting updated item:', updatedItem);
     onSubmit(updatedItem);
   };
 
@@ -49,6 +50,15 @@ function UpdateItemForm({ initialData, onSubmit, onCancel }) {
         <Input
           value={content}
           onChange={(event) => setContent(event.detail.value)}
+        />
+      </FormField>
+      <FormField
+        label="Author"
+        description="Current logged in user"
+      >
+        <Input
+          value={user || 'Guest'}
+          disabled
         />
       </FormField>
     </Form>

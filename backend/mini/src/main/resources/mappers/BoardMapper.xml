@@ -7,8 +7,8 @@
     </select>
 
     <insert id="insertBoard" useGeneratedKeys="true" keyProperty="bIdx">
-        INSERT INTO board (row_span, column_span, title, content)
-        VALUES (#{rowSpan}, #{columnSpan}, #{title}, #{content})
+        INSERT INTO board (row_span, column_span, title, content, username)
+        VALUES (#{rowSpan}, #{columnSpan}, #{title}, #{content}, #{username})
     </insert>
 
     <update id="updateBoard">

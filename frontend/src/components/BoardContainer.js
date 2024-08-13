@@ -7,7 +7,8 @@ import UpdateItemForm from './UpdateItemForm';
 import { fetchBoardItems, createBoardItem, updateBoardItem, deleteBoardItem } from '../api/board';
 import axios from 'axios';
 
-function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated, onItemDeleted}) {
+function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated, onItemDeleted, user}) {
+  console.log('BoardContainer received user:', user);
   const [items, setItems] = useState([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -197,11 +198,13 @@ function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated, onItemDel
     handleUpdate({...editItem, ...updatedData});
   }}
   onCancel={() => { setIsFormVisible(false); setIsEditing(false); setEditItem(null); }}
+  user={user}
 />
   ) : (
     <NewItemForm
       onSubmit={handleCreate}
       onCancel={() => setIsFormVisible(false)}
+      user = {user}
     />
   )
 )}

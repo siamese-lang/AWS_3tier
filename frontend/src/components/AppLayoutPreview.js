@@ -41,9 +41,10 @@ function AppLayoutPreview() {
     const checkAuth = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/check-auth`, { withCredentials: true });
-        console.log(response);
+        console.log('Authentication response:', response);
         if (response.data.authenticated) {
           setUser(response.data.username);
+          console.log('User set:', response.data.username);
         } else {
           navigate('/login');
         }
@@ -52,7 +53,7 @@ function AppLayoutPreview() {
         navigate('/login');
       }
     };
-
+  
     checkAuth();
   }, [navigate]);
 
@@ -183,6 +184,7 @@ function AppLayoutPreview() {
     onDislikeUpdate={handleDislikeUpdate}
     onItemCreated={handleItemCreated}
     onItemDeleted={handleItemDeleted}
+    user={user}
   />
 </TextContent>
             <SplitPanel header="Split panel header">Split panel content</SplitPanel>

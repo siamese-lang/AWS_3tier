@@ -55,9 +55,8 @@ public class UserController {
             idCookie.setPath("/");
             idCookie.setDomain(domainName); // 또는 설정된 도메인
 
-            // 현재 시간을 서울 시간으로 가져온 후, 1시간 후의 시간을 UTC로 변환
             ZonedDateTime expiration = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).plusDays(1);
-            String expires = expiration.withZoneSameInstant(ZoneId.of("UTC")).format(DateTimeFormatter.RFC_1123_DATE_TIME);
+            String expires = expiration.withZoneSameInstant(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.RFC_1123_DATE_TIME);
             response.addHeader("Set-Cookie", "JSESSIONID=" + session.getId() + "; Expires=" + expires + "; Path=/; Domain=" + domainName + "; Secure; HttpOnly; SameSite=None");
 
             return ResponseEntity.ok().build();

@@ -39,11 +39,4 @@ public class WebConfig implements WebMvcConfigurer {
         serializer.setUseSecureCookie(Boolean.parseBoolean(useSecureCookie)); // 로컬 개발 환경에서는 false, 실제 배포 환경에서는 true 설정 필요
         return serializer;
     }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authInterceptor)
-                .addPathPatterns("/api/**") // 모든 /api 경로에 대해 인터셉터 적용
-                .excludePathPatterns("/api/login", "/api/register", "/api/board", "/api/reset-password", "/api/check-auth"); // 인증 필요 없는 경로
-    }
 }

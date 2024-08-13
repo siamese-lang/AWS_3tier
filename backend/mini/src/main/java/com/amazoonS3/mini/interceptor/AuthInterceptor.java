@@ -17,16 +17,21 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // 세션에서 사용자 정보 확인
         HttpSession session = request.getSession(false);
-        User user = (session != null) ? (User) session.getAttribute("user") : null;
 
-        // 인증되지 않은 경우 로그인 페이지로 리다이렉트
-        if (user == null) {
-            response.sendRedirect(frontendUrl+"/login"); // 리다이렉트할 경로 설정
-            return false;
+        // 예외 처리할 경로
+        String uri = request.getRequestURI();
+        if ("/api/check-auth".equals(uri) || "/api/login".equals(uri) || "/api/register".equals(uri) || "/api/board".equals(uri)) {
+            return true;
         }
 
-        return true; // 인증된 경우 요청을 진행
+        // 세션이 존재하고, 인증 정보가 있으면 인터셉터 통과
+        if (session != null && session.getAttribute("user") != null) {
+            return true;
+        }
+
+        // 세션이 없거나 인증 정보가 없는 경우
+        response.sendRedirect("/api/login");
+        return false;
     }
 }

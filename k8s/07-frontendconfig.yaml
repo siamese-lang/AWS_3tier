@@ -5,4 +5,4 @@ metadata:
 spec:
   redirectToHttps:
     enabled: true
-    responseCodeName: ""
+    responseCodeName: "MOVED_PERMANENTLY_DEFAULT"  # 리다이렉션 응답 코드 설정

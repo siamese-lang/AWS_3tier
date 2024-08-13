@@ -22,11 +22,6 @@ public class AuthInterceptor implements HandlerInterceptor {
         // 예외 처리할 경로
         String uri = request.getRequestURI();
         if ("/api/check-auth".equals(uri) || "/api/login".equals(uri) || "/api/register".equals(uri) || "/api/board".equals(uri)) {
-            if ("/api/login".equals(uri) && session != null && session.getAttribute("user") != null) {
-                // 로그인된 사용자가 로그인 페이지로 접근하려고 할 때 홈으로 리디렉션
-                response.sendRedirect("/home");
-                return false;
-            }
             return true;
         }
 
@@ -34,9 +29,9 @@ public class AuthInterceptor implements HandlerInterceptor {
         if (session != null && session.getAttribute("user") != null) {
             return true;
         }
-
+        
         // 세션이 없거나 인증 정보가 없는 경우
-        response.sendRedirect("/api/login");
+        response.sendRedirect("/login");
         return false;
     }
 

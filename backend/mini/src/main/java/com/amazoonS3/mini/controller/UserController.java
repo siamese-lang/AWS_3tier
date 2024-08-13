@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -42,31 +43,39 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestParam String username, @RequestParam String password, HttpServletRequest request, HttpServletResponse response) {
-        User user = userService.authenticateUser(username, password);
+public ResponseEntity<?> loginUser(@RequestParam String username, @RequestParam String password, HttpServletRequest request, HttpServletResponse response) {
+    User user = userService.authenticateUser(username, password);
 
-        if (user != null) {
-            HttpSession session = request.getSession(true); // 새로운 세션 생성
-            session.setAttribute("user", user);
+    if (user != null) {
+        HttpSession session = request.getSession(true); // 새로운 세션 생성
+        session.setAttribute("user", user);
 
-            Cookie idCookie = new Cookie("JSESSIONID", session.getId());
-            idCookie.setHttpOnly(true);
-            idCookie.setSecure(true);
-            idCookie.setPath("/");
-            idCookie.setDomain(domainName); // 또는 설정된 도메인
+        ZonedDateTime expiration = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).plusDays(1);
+        String expires = expiration.withZoneSameInstant(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.RFC_1123_DATE_TIME);
+        
+        Cookie cookie = new Cookie("JSESSIONID", session.getId());
+        cookie.setPath("/");
+        cookie.setDomain(domainName);
+        cookie.setMaxAge((int) Duration.ofDays(1).getSeconds()); // 쿠키 유효 기간 설정
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite", "None");
 
-            ZonedDateTime expiration = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).plusDays(1);
-            String expires = expiration.withZoneSameInstant(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.RFC_1123_DATE_TIME);
-            response.addHeader("Set-Cookie", "JSESSIONID=" + session.getId() + "; Expires=" + expires + "; Path=/; Domain=" + domainName + "; Secure; HttpOnly; SameSite=None");
+        response.addCookie(cookie); // 쿠키 설정
 
-            return ResponseEntity.ok().build();
-        }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.ok().build();
     }
+
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+}
+
 
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser(HttpServletRequest request, HttpServletResponse response) {
+        // 브라우저 캐시 방지 헤더 설정
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate(); // 세션 무효화

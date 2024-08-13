@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: was
-        image: sojh5741aws/mini:backend-https-v20
+        image: sojh5741aws/mini:backend-https-v25
         ports:
         - containerPort: 8080
         imagePullPolicy: Always
@@ -68,3 +68,21 @@ spec:
             configMapKeyRef:
               name: app-config
               key: FRONTEND_URL
+# REDIS_HOST
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: REDIS_HOST
+# REDIS_PORT
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: REDIS_PORT
+# DOMAIN
+        - name: DOMAIN
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DOMAIN

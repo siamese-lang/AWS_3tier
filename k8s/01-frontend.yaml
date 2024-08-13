@@ -27,13 +27,13 @@ spec:
     spec:
       containers:
       - name: web
-        image: sojh5741aws/mini:frontend-v21
+        image: sojh5741aws/mini:frontend-v27
         ports:
         - containerPort: 80
         imagePullPolicy: Always
-        # env:
-        # - name: REACT_APP_API_BASE_URL
-        #   valueFrom:
-        #     configMapKeyRef:
-        #       name: app-config
-        #       key: REACT_APP_API_BASE_URL
+        env:
+        - name: REACT_APP_API_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: API_BASE_URL

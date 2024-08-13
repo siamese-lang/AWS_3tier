@@ -5,8 +5,11 @@ metadata:
 data:
   MARIADB_HOST: "db-svc"
   MARIADB_PORT: "3306"
+  REDIS_HOST: "redis-svc"
+  REDIS_PORT: "6379"
   FRONTEND_URL: "https://www.so-cute.shop"
-  REACT_APP_API_BASE_URL: "https://www.so-cute.shop" #"http://was-svc.default.svc.cluster.local:8080"
+  DOMAIN: "so-cute.shop"
+  API_BASE_URL: "https://www.so-cute.shop"
 ---
 apiVersion: v1
 kind: ConfigMap

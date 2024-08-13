@@ -13,8 +13,8 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-# Copy .env file
-COPY .env ./
+# 환경 변수 설정
+ENV REACT_APP_API_BASE_URL=${API_BASE_URL}
 
 # Build the application
 RUN npm run build

@@ -72,39 +72,39 @@ function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated, onItemDel
     }
   }, [onItemCreated]);
   
-  const handleUpdate = useCallback(async (updatedItem) => {
-    try {
-      if (!updatedItem || !updatedItem.bidx) {
-        console.error('Item ID (bidx) is missing.');
-        return;
+    const handleUpdate = useCallback(async (updatedItem) => {
+      try {
+        if (!updatedItem || !updatedItem.bidx) {
+          console.error('Item ID (bidx) is missing.');
+          return;
+        }
+        
+        console.log('Updating item:', updatedItem);
+        const serverUpdatedItem = await updateBoardItem(updatedItem);
+        console.log('Server updated item:', serverUpdatedItem);
+    
+        setItems(prevItems =>
+          prevItems.map(i => i.bidx === updatedItem.bidx ? {...i, ...updatedItem, ...serverUpdatedItem} : i)
+        );
+        setIsFormVisible(false);
+        setIsEditing(false);
+        setEditItem(null);
+      } catch (error) {
+        console.error('Error updating item:', error);
       }
-      
-      console.log('Updating item:', updatedItem);
-      const serverUpdatedItem = await updateBoardItem(updatedItem);
-      console.log('Server updated item:', serverUpdatedItem);
-  
-      setItems(prevItems =>
-        prevItems.map(i => i.bidx === updatedItem.bidx ? {...i, ...updatedItem, ...serverUpdatedItem} : i)
-      );
-      setIsFormVisible(false);
-      setIsEditing(false);
-      setEditItem(null);
-    } catch (error) {
-      console.error('Error updating item:', error);
-    }
-  }, []);
-
-  const handleDelete = useCallback(async (bidx) => {
-    try {
-      await deleteBoardItem(bidx);
-      setItems(prevItems =>
-        prevItems.filter(item => item.bidx !== bidx)
-      );
-      onItemDeleted(bidx);
-    } catch (error) {
-      console.error('Error deleting item:', error);
-    }
-  }, [onItemDeleted]);
+    }, []);
+    
+    const handleDelete = useCallback(async (bidx) => {
+      try {
+        await deleteBoardItem(bidx);
+        setItems(prevItems =>
+          prevItems.filter(item => item.bidx !== bidx)
+        );
+        onItemDeleted(bidx);
+      } catch (error) {
+        console.error('Error deleting item:', error);
+      }
+    }, [onItemDeleted]);
 
   const handleItemsChange = (event) => {
     const updatedItems = event.detail.items;

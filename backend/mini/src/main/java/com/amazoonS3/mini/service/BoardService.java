@@ -22,6 +22,10 @@ public class BoardService {
         return boardMapper.getAll();
     }
 
+    public Board getBoardById(int bIdx) {
+        return boardMapper.getBoardById(bIdx);
+    }
+
     public Board insertBoard(Board board) {
         boardMapper.insertBoard(board);
         return boardMapper.getBoardById(board.getBIdx());

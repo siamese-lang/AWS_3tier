@@ -9,6 +9,7 @@ public class Board {
     private String content;
     private int likes;
     private int dislikes;
+    private String username;
 
     public int getBIdx() {
         return this.bIdx;
@@ -67,4 +68,8 @@ public class Board {
         this.dislikes = dislikes;
     }
 
+
+    public String getUsername() { return username; }
+
+    public void setUsername(String username) { this.username = username; }
 }

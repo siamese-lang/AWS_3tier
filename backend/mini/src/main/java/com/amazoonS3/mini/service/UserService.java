@@ -1,5 +1,10 @@
 package com.amazoonS3.mini.service;
 
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Cookie;
 import com.amazoonS3.mini.mapper.UserMapper;
 import com.amazoonS3.mini.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,5 +42,17 @@ public class UserService {
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(newPassword));
         userMapper.updatePassword(user);
+    }
+
+    public String getUsernameFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("username".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }

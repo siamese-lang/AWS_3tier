@@ -51,7 +51,6 @@
 			<scope>test</scope>
 		</dependency>
 		
-
 		<!-- Spring Boot Starter Web -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

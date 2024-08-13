@@ -178,7 +178,7 @@ function AppLayoutPreview() {
             }
           >
 <TextContent>
-  <h2>Welcome, {user || 'Guest'}!</h2>
+  <h2>Welcome, {user || 'Guest'}님!</h2>
   <BoardContainer 
     onLikeUpdate={handleLikeUpdate} 
     onDislikeUpdate={handleDislikeUpdate}

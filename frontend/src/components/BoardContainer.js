@@ -222,42 +222,41 @@ renderItem={(item) => (
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-
-<Button 
-  onClick={() => handleLike(item)}
-  variant="icon"
-  iconName="thumbs-up"
->
-  {item.likes > 0 ? item.likes : ''}
-</Button>
-
-<Button 
-  onClick={() => handleDislike(item)}
-  variant="icon"
-  iconName="thumbs-down"
->
-  {item.dislikes > 0 ? item.dislikes : ''}
-</Button>
-
-        </div>
-        <div>
           <Button 
-            onClick={() => {
-              setEditItem(item);
-              setIsFormVisible(true);
-              setIsEditing(true);
-            }}
-            variant="normal"
+            onClick={() => handleLike(item)}
+            variant="icon"
+            iconName="thumbs-up"
           >
-            Edit
+            {item.likes > 0 ? item.likes : ''}
           </Button>
           <Button 
-            onClick={() => handleDelete(item.bidx)}
-            variant="normal"
+            onClick={() => handleDislike(item)}
+            variant="icon"
+            iconName="thumbs-down"
           >
-            Delete
+            {item.dislikes > 0 ? item.dislikes : ''}
           </Button>
         </div>
+        {user === item.username && (
+          <div>
+            <Button 
+              onClick={() => {
+                setEditItem(item);
+                setIsFormVisible(true);
+                setIsEditing(true);
+              }}
+              variant="normal"
+            >
+              Edit
+            </Button>
+            <Button 
+              onClick={() => handleDelete(item.bidx)}
+              variant="normal"
+            >
+              Delete
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   </BoardItem>

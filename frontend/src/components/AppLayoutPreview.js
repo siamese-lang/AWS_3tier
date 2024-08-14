@@ -28,6 +28,7 @@ function AppLayoutPreview() {
   const [boardItems, setBoardItems] = useState([]);
   const [version, setVersion] = useState(null);
   const navigate = useNavigate();
+  const [toolsOpen, setToolsOpen] = useState(true);
 
   const handleItemCreated = (newItem) => {
     setBoardItems(prevItems => [...prevItems, newItem]);
@@ -36,6 +37,11 @@ function AppLayoutPreview() {
   const handleItemDeleted = (deletedItemId) => {
     setBoardItems(prevItems => prevItems.filter(item => item.bidx !== deletedItemId));
   };
+
+  const toggleHelpPanel = () => {
+    setToolsOpen(!toolsOpen);
+  };
+
   // Fetch user authentication status and user info
   useEffect(() => {
     const checkAuth = async () => {
@@ -173,8 +179,26 @@ function AppLayoutPreview() {
             ]}
           />
         }
-        toolsOpen={true}
-        tools={<HelpPanel header={<h2>Overview</h2>}>Help content</HelpPanel>}
+        toolsOpen={toolsOpen}
+        onToolsChange={({ detail }) => setToolsOpen(detail.open)}
+        tools={
+          <HelpPanel header={<h2>개요</h2>}>
+            <p>
+              이 애플리케이션은 사용자가 게시물을 생성, 수정, 삭제할 수 있는 게시판 시스템입니다.
+            </p>
+            <p>
+              주요 기능:
+            </p>
+            <ul>
+              <li>게시물 작성</li>
+              <li>게시물 수정 및 삭제</li>
+              <li>좋아요/싫어요 기능</li>
+            </ul>
+            <p>
+              더 자세한 정보나 도움이 필요하시면 관리자에게 문의해주세요.
+            </p>
+          </HelpPanel>
+        }
         content={
           <ContentLayout
             header={
@@ -182,9 +206,14 @@ function AppLayoutPreview() {
                 variant="h1"
                 info={<Link variant="info">Info</Link>}
                 actions={
-                  <Button onClick={handleLogout} variant="primary">
-                    Logout
-                  </Button>
+                  <>
+                    <Button onClick={toggleHelpPanel} variant="normal" className="board-container-button">
+                      도움말
+                    </Button>
+                    <Button onClick={handleLogout} variant="primary" className="board-container-button">
+                      로그아웃
+                    </Button>
+                  </>
                 }
               >
                 Page header

@@ -1,0 +1,9 @@
+.board-container-button {
+  margin-left: 10px;  
+}
+
+.board-item-buttons {
+  display: flex;
+  gap: 10px;
+}
+

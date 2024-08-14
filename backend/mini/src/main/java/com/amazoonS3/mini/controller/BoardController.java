@@ -76,4 +76,12 @@ public class BoardController {
         response.put("data", updatedBoard);
         return ResponseEntity.ok(response);
     }
+    
+    @GetMapping("/version")
+    public ResponseEntity<Map<String, String>> getVersion() {
+        Map<String, String> response = new HashMap<>();
+        response.put("version", "v1");
+        return ResponseEntity.ok(response);
+    }
+
 }

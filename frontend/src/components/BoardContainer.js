@@ -244,7 +244,7 @@ renderItem={(item) => (
           </Button>
         </div>
         {user === item.username && (
-          <div>
+          <div className="board-item-buttons">
                   <Button 
                     onClick={() => {
                       setEditItem(item);
@@ -252,14 +252,12 @@ renderItem={(item) => (
                       setIsEditing(true);
                     }}
                     variant="normal"
-                    className="board-container-button"
                   >
                     Edit
                   </Button>
                   <Button 
                     onClick={() => handleDelete(item.bidx)}
                     variant="normal"
-                    className="board-container-button"
                   >
                     Delete
                   </Button>

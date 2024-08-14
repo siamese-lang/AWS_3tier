@@ -19,14 +19,14 @@ import messages from '@cloudscape-design/components/i18n/messages/all.en';
 import { useNavigate } from 'react-router-dom';
 import BoardContainer from './BoardContainer';
 
-import { fetchBoardItems } from '../api/board';
+import { fetchBoardItems, fetchVersion } from '../api/board';
 const LOCALE = 'en';
 
 function AppLayoutPreview() {
   const [user, setUser] = useState(null);
 
   const [boardItems, setBoardItems] = useState([]);
-
+  const [version, setVersion] = useState(null);
   const navigate = useNavigate();
 
   const handleItemCreated = (newItem) => {
@@ -68,6 +68,19 @@ function AppLayoutPreview() {
     };
   
     loadBoardItems();
+  }, []);
+
+  useEffect(() => {
+    const loadVersion = async () => {
+      try {
+        const versionInfo = await fetchVersion();
+        setVersion(versionInfo);
+      } catch (error) {
+        console.error('버전 정보 로딩 실패:', error);
+      }
+    };
+
+    loadVersion();
   }, []);
 
   const handleLikeUpdate = (updatedItem) => {
@@ -153,8 +166,9 @@ function AppLayoutPreview() {
               {
                 type: 'info',
                 dismissible: true,
-                content: 'This is an info flash message.',
-                id: 'message_1',
+                //content: `React Version: v1             Spring Boot Version: ${version || '로딩 중...'}`,
+                content: <div>React Version: v1<br />Spring Boot Version: {version || '로딩 중...'}</div>,
+                id: 'version_info',
               },
             ]}
           />

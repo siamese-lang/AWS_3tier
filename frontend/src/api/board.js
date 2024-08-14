@@ -46,3 +46,13 @@ export const deleteBoardItem = async (bIdx) => {
     throw error;
   }
 };
+
+export const fetchVersion = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/board/version`, { withCredentials: true });
+    return response.data.version;
+  } catch (error) {
+    console.error('버전 정보 가져오기 실패:', error);
+    return null;
+  }
+};

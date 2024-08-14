@@ -6,6 +6,7 @@ import NewItemForm from './NewItemForm';
 import UpdateItemForm from './UpdateItemForm';
 import { fetchBoardItems, createBoardItem, updateBoardItem, deleteBoardItem } from '../api/board';
 import axios from 'axios';
+import './BoardContainer.css';
 
 function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated, onItemDeleted, user}) {
   console.log('BoardContainer received user:', user);
@@ -185,7 +186,12 @@ function BoardContainer({onLikeUpdate, onDislikeUpdate, onItemCreated, onItemDel
       header={
         <Header variant="h2" description="Container description">
           Container header
-          <Button onClick={() => { setIsFormVisible(true); setIsEditing(false); setEditItem(null); }}>Add Item</Button>
+          <Button 
+            onClick={() => { setIsFormVisible(true); setIsEditing(false); setEditItem(null); }}
+            className="board-container-button"
+          >
+            Add Item
+          </Button>
         </Header>
       }
     >
@@ -239,22 +245,24 @@ renderItem={(item) => (
         </div>
         {user === item.username && (
           <div>
-            <Button 
-              onClick={() => {
-                setEditItem(item);
-                setIsFormVisible(true);
-                setIsEditing(true);
-              }}
-              variant="normal"
-            >
-              Edit
-            </Button>
-            <Button 
-              onClick={() => handleDelete(item.bidx)}
-              variant="normal"
-            >
-              Delete
-            </Button>
+                  <Button 
+                    onClick={() => {
+                      setEditItem(item);
+                      setIsFormVisible(true);
+                      setIsEditing(true);
+                    }}
+                    variant="normal"
+                    className="board-container-button"
+                  >
+                    Edit
+                  </Button>
+                  <Button 
+                    onClick={() => handleDelete(item.bidx)}
+                    variant="normal"
+                    className="board-container-button"
+                  >
+                    Delete
+                  </Button>
           </div>
         )}
       </div>

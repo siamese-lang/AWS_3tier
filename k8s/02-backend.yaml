@@ -3,7 +3,9 @@ kind: Service
 metadata:
   name: was-svc
   annotations:
-    cloud.google.com/backend-config: '{"default": "my-backend-config"}'
+    alb.ingress.kubernetes.io/healthcheck-path: "/actuator/health"
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: "30"
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "10"
 spec:
   selector:
     app: was
@@ -27,7 +29,7 @@ spec:
     spec:
       containers:
       - name: was
-        image: sojh5741aws/mini:backend-https-v25
+        image: 875522371656.dkr.ecr.us-west-2.amazonaws.com/ecr-test:backend-v1
         ports:
         - containerPort: 8080
         imagePullPolicy: Always

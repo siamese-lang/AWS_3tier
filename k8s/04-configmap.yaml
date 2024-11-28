@@ -1,15 +1,23 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: aws-load-balancer-attributes
+data:
+  idle_timeout.timeout_seconds: "60"
+  routing.http2.enabled: "true"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: app-config
 data:
   MARIADB_HOST: "db-svc"
   MARIADB_PORT: "3306"
   REDIS_HOST: "redis-svc"
   REDIS_PORT: "6379"
-  FRONTEND_URL: "https://www.so-cute.shop"
-  DOMAIN: "so-cute.shop"
-  API_BASE_URL: "https://www.so-cute.shop"
+  FRONTEND_URL: "https://www.abydos.store"
+  DOMAIN: "abydos.store"
+  API_BASE_URL: "https://www.abydos.store"
 ---
 apiVersion: v1
 kind: ConfigMap

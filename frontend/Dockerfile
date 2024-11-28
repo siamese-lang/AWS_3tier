@@ -14,7 +14,8 @@ RUN npm install
 COPY . .
 
 # 환경 변수 설정
-ENV REACT_APP_API_BASE_URL=${API_BASE_URL}
+ARG REACT_APP_API_BASE_URL
+ENV REACT_APP_API_BASE_URL=${REACT_APP_API_BASE_URL}
 
 # Build the application
 RUN npm run build

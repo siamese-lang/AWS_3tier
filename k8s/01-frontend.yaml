@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: web
-        image: sojh5741aws/mini:frontend-v27
+        image: 875522371656.dkr.ecr.us-west-2.amazonaws.com/ecr-test:frontend-v1
         ports:
         - containerPort: 80
         imagePullPolicy: Always

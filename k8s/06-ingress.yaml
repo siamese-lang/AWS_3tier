@@ -3,17 +3,15 @@ kind: Ingress
 metadata:
   name: myingress
   annotations:
-    kubernetes.io/ingress.global-static-ip-name: "myip"
-    #networking.gke.io/managed-certificates: managed-cert
-    #nginx.ingress.kubernetes.io/rewrite-target: /
-    #nginx.ingress.kubernetes.io/ssl-redirect: "true"  # HTTPS 리다이렉션 설정
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:875522371656:certificate/16f195b3-25b6-49b3-ba83-067b06310829
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
 spec:
-  tls:
-  - hosts:
-    - www.so-cute.shop
-    secretName: www-so-cute # 외부 인증서 파일로 만든 tls secret
   rules:
-  - host: www.so-cute.shop
+  - host: www.abydos.store
     http:
       paths:
       - path: /
